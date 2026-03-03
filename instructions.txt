@@ -5,4 +5,10 @@ pip install tensorflow==2.15.0
 conda install -c pytorch faiss-gpu
 pip install -r requirements.txt
 pip install -e ".[dev]"
+cd C:\Users\francesco\Documents\TESI\DOMANDA\pres11\New folder
+git clone https://github.com/mesarcik/RFI-NLN
 python -c "import site; print(site.getsitepackages()[0])"
+
+git add .
+git commit -m "descrizione delle modifiche"
+git push
