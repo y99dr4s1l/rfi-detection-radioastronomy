@@ -1,13 +1,13 @@
-# Dataset
+# Dataset# Dataset
 dataset: lofar
-data_path: /kaggle/input/lofar-full-rfi-dataset-pkl/
+data_path: data/raw/lofar
 
 # Data loading
 max_samples: 500
 
 # Parameters
-k: 0.46
-h: 1.1
+k: 0.1618
+h: 0.0
 
 # Preprocessing
 clip_min: 1.0e-7
