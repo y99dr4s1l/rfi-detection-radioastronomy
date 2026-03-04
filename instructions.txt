@@ -12,3 +12,12 @@ python -c "import site; print(site.getsitepackages()[0])"
 git add .
 git commit -m "descrizione delle modifiche"
 git push
+
+
+# TO-DO
+- ottenere stessi risultati cusum luserna
+- runnare sum_threshold luserna
+- inserire funzionamento lofar
+- inserire feature extraction
+- inserire metodi simple, knn, rf, unet, rnet
+- inserire gridsearch
