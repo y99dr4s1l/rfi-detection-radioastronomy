@@ -2,6 +2,7 @@
 dataset: luserna
 name: PG01
 data_path: data/raw/luserna
+truth_path: data/raw/luserna
 
 # Parameters
 k: 0.36

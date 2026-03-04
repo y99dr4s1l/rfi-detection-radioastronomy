@@ -19,7 +19,7 @@ with open(args.config) as f:
 # --- LOAD ---
 print('Loading data...')
 data = load_luserna(cfg['name'], path=cfg['data_path'], powers=False)
-truth = load_luserna_truth(path=cfg['data_path'])
+truth = load_luserna_truth(path=cfg['truth_path'])
 
 data_np = data.to_numpy().astype(np.float32)
 truth_np = truth.to_numpy().astype(bool)
