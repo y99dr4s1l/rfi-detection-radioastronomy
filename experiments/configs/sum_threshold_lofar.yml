@@ -1,0 +1,17 @@
+# Dataset
+dataset: lofar
+data_path: data/raw/lofar
+
+# Parameters
+chi0: 2.4
+mu0: 0
+i: 4
+
+# Preprocessing
+max_samples: 500
+clip_min: 1.0e-7
+clip_max: 32597745.5
+
+# Output
+results_path: experiments/results/sum_threshold_lofar.csv
+plot_path: experiments/results/sum_threshold_lofar_sample.png

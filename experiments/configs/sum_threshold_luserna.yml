@@ -1,0 +1,20 @@
+# Dataset
+dataset: luserna
+name: PG01
+data_path: data/raw/luserna
+truth_path: data/raw/luserna
+
+# Parameters
+iterations: 6
+molt: 6
+winsorize_limits: 0.2
+
+# Preprocessing
+patch_size: [512, 512]
+train_size: 492
+max_patches: 612
+random_seed: 42
+
+# Output
+results_path: experiments/results/sum_threshold_luserna.csv
+plot_path: experiments/results/sum_threshold_luserna_sample.png
