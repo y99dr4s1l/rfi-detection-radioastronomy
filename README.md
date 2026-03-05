@@ -118,9 +118,29 @@ See https://gitlab.com/aroffringa/aoflagger for other platforms.
 
 ## Data
 
-Raw data is not included in this repository due to file size constraints. See `data/README.md` for dataset descriptions.
+Raw data is not included in this repository due to file size constraints.
+See `data/README.md` for detailed dataset descriptions.
 
-To generate synthetic mock data for testing:
+### Luserna dataset
+
+The Luserna spectrogram and ground truth are available on Kaggle:
+
+- Spectrogram: https://www.kaggle.com/datasets/y99dr4s1ll/spockdatasetsh5pg01
+- Ground truth: https://www.kaggle.com/datasets/y99dr4s1ll/spock-truth-h5-pg01
+
+Download and place the files in `data/raw/luserna/`.
+
+### LOFAR dataset
+
+The LOFAR benchmark dataset is available on Zenodo:
+
+- https://zenodo.org/records/6724065
+
+Download `LOFAR_Full_RFI_dataset.pkl` and place it in `data/raw/lofar/`.
+
+### Mock data
+
+To generate synthetic data for testing without downloading the full datasets:
 ```bash
 python scripts/create_mock_data.py
 ```
