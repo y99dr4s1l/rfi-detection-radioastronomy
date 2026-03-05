@@ -3,9 +3,9 @@ dataset: lofar
 data_path: data/raw/lofar
 
 # Parameters
-chi0: 2.4
-mu0: 0
-i: 4
+iterations: 6
+molt: 6
+winsorize_limits: 0.2
 
 # Preprocessing
 max_samples: 500
