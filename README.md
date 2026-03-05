@@ -191,37 +191,3 @@ Observations were conducted at the Astronomical Observatory of Luserna San Giova
 ## License
 
 This project is released for academic purposes.
-
-
-Data Collection  - - - - - - - - - - - - - - -  Data acquisition, A/D conversion,
-                      (RT)                                         spectrogram generation, CSV export
-                        │
-                        V
-                   Annotation  - - - - - - - - - - - - - - - - -  Manual pixel-level labeling
-                        │
-                        V                                          Time de-trending,
-                  Preprocessing  - - - - - - - - - - - - - - - -  standardization,
-                        │                                          clipping, patching
-       ┌────────────────┼────────────────┐
-       │                │                │
- ┌─────────────┐  ┌─────────────┐  ┌─────────────┐ - - - - - - -  Method selection
- │    CUSUM    │  │    K-NN     │  │   U-Net     │
- │SumThreshold │  │     RF      │  │   R-Net     │
- └─────────────┘  └─────────────┘  └─────────────┘
-       │                │                │
-       │                V                │                          Feature engineering
-       │        Feature Extraction  - - -│ - - - - - - - - - - - -  and selection
-       │                │                │
-       │                └────────┬───────┘
-       │                         │
-       │                         V                                  Training, optimization,
-       │                    Training  - - - - - - - - - - - - - - - validation
-       │                         │
-       V                         V
-Threshold application       Prediction  - - - - - - - - - - - - -  Performance measurement
-  on test data             on test data                             on test data
-       │                         │
-       └────────────┬────────────┘
-                    │
-                    V                                               Quantitative comparison,
-               Evaluation  - - - - - - - - - - - - - - - - - - - - operational recommendations
