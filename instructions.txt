@@ -18,7 +18,7 @@ git push
 + ottenere stessi risultati cusum luserna
 + inserire funzionamento lofar
 + ottenere stessi risultati cusum lofar
-- runnare sum_threshold luserna
++ runnare sum_threshold luserna
 - inserire feature extraction
 - inserire metodi simple, knn, rf, unet, rnet
 - inserire gridsearch
