@@ -19,7 +19,8 @@ git push
 + inserire funzionamento lofar
 + ottenere stessi risultati cusum lofar
 + runnare sum_threshold luserna
-- inserire feature extraction
-- inserire metodi simple, knn, rf, unet, rnet
++ inserire feature extraction
++ inserire metodi knn, rf
+- inserire metodi simple, unet, rnet
 - inserire gridsearch
 - valurare se valori di clipping dinamici da percentili o altro, per ora statici

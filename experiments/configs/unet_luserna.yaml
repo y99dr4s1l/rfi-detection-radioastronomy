@@ -1,0 +1,32 @@
+# Dataset
+dataset: luserna
+name: PG01
+data_path: data/raw/luserna
+truth_path: data/raw/luserna
+
+# Method
+method: unet
+
+# Model parameters
+n_filters: 16
+n_layers: 2
+dropout: 0.05
+batchnorm: true
+
+# Training
+epochs: 500
+batch_size: 1024
+learning_rate: 1.0e-4
+buffer_size: 64
+
+# Preprocessing
+patch_size: [32, 32]
+patch_size_512: [512, 512]
+train_size: 492
+max_patches: 612
+random_seed: 42
+
+# Output
+models_path: models/unet_luserna.keras
+results_path: experiments/results/unet_luserna.csv
+plot_path: experiments/results/unet_luserna_sample.png

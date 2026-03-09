@@ -1,0 +1,28 @@
+# Dataset
+dataset: lofar
+data_path: data/raw/lofar
+
+# Method
+method: unet
+
+# Model parameters
+n_filters: 16
+n_layers: 2
+dropout: 0.05
+batchnorm: true
+
+# Training
+epochs: 500
+batch_size: 1024
+learning_rate: 1.0e-4
+buffer_size: 64
+
+# Preprocessing
+max_samples: 500
+clip_min: 1.0e-7
+clip_max: 32597745.5
+
+# Output
+models_path: models/unet_lofar.keras
+results_path: experiments/results/unet_lofar.csv
+plot_path: experiments/results/unet_lofar_sample.png
