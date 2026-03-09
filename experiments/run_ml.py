@@ -3,18 +3,13 @@ import os
 import sys
 import yaml
 import argparse
-import time
 
-# Third party
-import numpy as np
-import pandas as pd
-from imblearn.under_sampling import RandomUnderSampler
-
-# RFI-NLN
+# --- ARGS FIRST (before other imports) ---
 parser = argparse.ArgumentParser()
 parser.add_argument('--config', default='experiments/configs/knn_luserna.yaml')
 parser.add_argument('--rfinln_path', type=str, default='../RFI-NLN')
 parser.add_argument('--data_path', type=str, default=None)
+parser.add_argument('--truth_path', type=str, default=None)
 parser.add_argument('--skip_features', action='store_true',
                     help='Skip feature extraction and load from CSV')
 args_cli = parser.parse_args()
@@ -22,8 +17,16 @@ args_cli = parser.parse_args()
 sys.path.insert(0, args_cli.rfinln_path)
 sys.path.insert(0, 'src')
 
+# Third party
+import numpy as np
+import pandas as pd
+from imblearn.under_sampling import RandomUnderSampler
+
+# RFI-NLN
 from utils.data import get_patches
 from utils.data.processor import process
+
+# Project
 from loaders.luserna_loader import load_luserna, load_luserna_truth
 from preprocessing.spectrogram import polynomial_detrend, extract_and_split_patches, balance_dataset
 from methods.ml.features import prepare_features, create_features_dataframe, reconstruct_from_patches
@@ -37,6 +40,8 @@ with open(args_cli.config) as f:
 
 if args_cli.data_path is not None:
     cfg['data_path'] = args_cli.data_path
+if args_cli.truth_path is not None:
+    cfg['truth_path'] = args_cli.truth_path
 
 METHOD = cfg['method']
 PATCH_SIZE = cfg['patch_size']
@@ -70,8 +75,6 @@ plot_rfi_distribution(train_data, train_masks, title=f'{cfg["dataset"].upper()} 
 
 # --- BALANCE 512x512 ---
 train_data_red, train_masks_red = balance_dataset(train_data, train_masks, random_seed=RANDOM_SEED)
-train_data_or = train_data.copy()
-train_masks_or = train_masks.copy()
 
 # --- PATCHES 8x8 ---
 print(f'Extracting {PATCH_SIZE}x{PATCH_SIZE} patches...')
@@ -105,9 +108,9 @@ else:
 
 # --- UNDERSAMPLING ---
 n_positive = int(np.sum(y == 1))
-n_negative = n_positive * cfg['undersampling_ratio']
+n_negative = min(n_positive * cfg['undersampling_ratio'], int(np.sum(y == 0)))
 undersampler = RandomUnderSampler(
-    sampling_strategy={0: min(n_negative, int(np.sum(y == 0))), 1: n_positive},
+    sampling_strategy={0: n_negative, 1: n_positive},
     random_state=RANDOM_SEED
 )
 X_balanced, y_balanced = undersampler.fit_resample(X, y)
@@ -123,6 +126,9 @@ if METHOD == 'knn':
         leaf_size=cfg['leaf_size'],
         algorithm=cfg['algorithm']
     )
+    with Timer() as t_train:
+        model = train_knn(model, X_balanced, y_balanced)
+
 elif METHOD == 'rf':
     from methods.ml.random_forest import build_rf, train_rf
     model = build_rf(
@@ -132,14 +138,11 @@ elif METHOD == 'rf':
         min_samples_leaf=cfg.get('min_samples_leaf', 1),
         max_features=cfg.get('max_features', None)
     )
+    with Timer() as t_train:
+        model = train_rf(model, X_balanced, y_balanced)
+
 else:
     raise ValueError(f'Unknown method: {METHOD}')
-
-with Timer() as t_train:
-    if METHOD == 'knn':
-        model = train_knn(model, X_balanced, y_balanced)
-    else:
-        model = train_rf(model, X_balanced, y_balanced)
 
 print(f'Training time: {t_train}')
 
