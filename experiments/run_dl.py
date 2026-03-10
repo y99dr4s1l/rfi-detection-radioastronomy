@@ -222,3 +222,43 @@ plot_detection_result(
     title=f'{METHOD.upper()} {DATASET.upper()} — threshold={optimal_threshold:.2f}',
     save_path=cfg['plot_path']
 )
+
+# --- BUILD MODEL ---
+if METHOD == 'unet':
+    from methods.dl.unet import build_unet, train_unet
+    model = build_unet(
+        args=args,
+        n_filters=cfg['n_filters'],
+        dropout=cfg['dropout'],
+        batchnorm=cfg['batchnorm']
+    )
+    with Timer() as t_train:
+        model = train_unet(
+            model=model,
+            train_data=train_data,
+            train_masks=train_masks,
+            epochs=cfg['epochs'],
+            batch_size=cfg['batch_size'],
+            learning_rate=cfg['learning_rate'],
+            buffer_size=cfg['buffer_size']
+        )
+
+elif METHOD == 'rnet':
+    from methods.dl.rnet import build_rnet, train_rnet
+    model = build_rnet(
+        args=args,
+        dropout=cfg['dropout']
+    )
+    with Timer() as t_train:
+        model = train_rnet(
+            model=model,
+            train_data=train_data,
+            train_masks=train_masks,
+            epochs=cfg['epochs'],
+            batch_size=cfg['batch_size'],
+            learning_rate=cfg['learning_rate'],
+            buffer_size=cfg['buffer_size']
+        )
+
+else:
+    raise ValueError(f'Unknown method: {METHOD}')

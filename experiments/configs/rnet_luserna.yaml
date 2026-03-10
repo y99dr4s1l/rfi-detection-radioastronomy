@@ -1,0 +1,29 @@
+# Dataset
+dataset: luserna
+name: PG01
+data_path: data/raw/luserna
+truth_path: data/raw/luserna
+
+# Method
+method: rnet
+
+# Model parameters
+dropout: 0.05
+
+# Training
+epochs: 500
+batch_size: 1024
+learning_rate: 1.0e-4
+buffer_size: 64
+
+# Preprocessing
+patch_size: [32, 32]
+patch_size_512: [512, 512]
+train_size: 492
+max_patches: 612
+random_seed: 42
+
+# Output
+models_path: models/rnet_luserna.keras
+results_path: experiments/results/rnet_luserna.csv
+plot_path: experiments/results/rnet_luserna_sample.png

@@ -1,0 +1,27 @@
+# Dataset
+dataset: lofar
+data_path: data/raw/lofar
+
+# Method
+method: rnet
+
+# Model parameters
+dropout: 0.05
+
+# Training
+epochs: 500
+batch_size: 1024
+learning_rate: 1.0e-4
+buffer_size: 64
+
+# Preprocessing
+patch_size: [32, 32]
+max_samples: 500
+clip_min: 1.0e-7
+clip_max: 32597745.5
+random_seed: 42
+
+# Output
+models_path: models/rnet_lofar.keras
+results_path: experiments/results/rnet_lofar.csv
+plot_path: experiments/results/rnet_lofar_sample.png
