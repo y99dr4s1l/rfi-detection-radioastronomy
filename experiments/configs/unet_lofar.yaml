@@ -6,13 +6,13 @@ data_path: data/raw/lofar
 method: unet
 
 # Model parameters
-n_filters: 16
+n_filters: 32
 n_layers: 2
 dropout: 0.05
 batchnorm: true
 
 # Training
-epochs: 500
+epochs: 50
 batch_size: 1024
 learning_rate: 1.0e-4
 buffer_size: 64
