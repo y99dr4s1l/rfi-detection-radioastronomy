@@ -8,6 +8,7 @@ truth_path: data/raw/luserna
 method: rnet
 
 # Model parameters
+n_filters: 64
 dropout: 0.1
 
 # Training
