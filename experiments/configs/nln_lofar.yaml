@@ -1,0 +1,36 @@
+# Dataset
+dataset: lofar
+data_path: data/raw/lofar
+
+# Method
+method: nln
+
+# Model parameters
+n_filters: 32
+n_layers: 2
+dropout: 0.05
+batchnorm: true
+
+# Training
+epochs: 50
+batch_size: 1024
+buffer_size: 64
+ae_lr: 1.0e-4
+disc_lr: 1.0e-5
+gen_lr: 1.0e-5
+
+# NLN inference
+n_neighbors: 2
+nln_dist_percentile: 70
+
+# Preprocessing
+patch_size: [64, 64]
+random_seed: 42
+max_samples: 500
+clip_min: 1.0e-7
+clip_max: 32597745.5
+
+# Output
+models_path: models/nln_lofar.keras
+results_path: experiments/results/nln_lofar.csv
+plot_path: experiments/results/nln_lofar_sample.png
