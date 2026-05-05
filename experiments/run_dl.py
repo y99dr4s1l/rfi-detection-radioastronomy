@@ -125,7 +125,11 @@ args.patch_x = cfg['patch_size'][0] if isinstance(cfg['patch_size'], list) else 
 args.patch_y = cfg['patch_size'][1] if isinstance(cfg['patch_size'], list) else cfg['patch_size']
 args.update_input_shape()
 
-# --- BUILD MODEL ---
+# --- BUILD & TRAIN MODEL ---
+# NLN-specific state (popolato solo se METHOD == 'nln')
+ae_train_data = None
+discriminator = None
+
 if METHOD == 'unet':
     from methods.dl.unet import build_unet, train_unet
     model = build_unet(
@@ -180,6 +184,33 @@ elif METHOD == 'rnet_moran':
             buffer_size=cfg['buffer_size']
         )
 
+elif METHOD == 'nln':
+    # NLN è anomaly detection: l'autoencoder si allena SOLO su patch normali
+    from methods.dl.nln import build_nln, train_nln
+
+    has_rfi = np.any(train_masks, axis=(1, 2, 3))
+    ae_train_data = train_data[~has_rfi]
+    print(f'NLN: filtered ae_train_data {ae_train_data.shape} '
+          f'(removed {has_rfi.sum()} RFI patches, kept {len(ae_train_data)} normal)')
+
+    ae, discriminator = build_nln(args=args)
+
+    with Timer() as t_train:
+        ae, discriminator = train_nln(
+            ae=ae,
+            discriminator=discriminator,
+            ae_train_data=ae_train_data,
+            epochs=cfg['epochs'],
+            batch_size=cfg['batch_size'],
+            buffer_size=cfg['buffer_size'],
+            ae_lr=cfg.get('ae_lr', 1e-4),
+            disc_lr=cfg.get('disc_lr', 1e-5),
+            gen_lr=cfg.get('gen_lr', 1e-5),
+        )
+
+    # `model` punta all'autoencoder per il save() successivo
+    model = ae
+
 else:
     raise ValueError(f'Unknown method: {METHOD}')
 
@@ -193,9 +224,29 @@ print(f'Model saved to {cfg["models_path"]}')
 # --- INFERENCE ---
 print('Running inference...')
 with Timer() as t_inf:
-    pred_patches = model.predict(test_data_p)
+    if METHOD == 'nln':
+        from methods.dl.nln import apply_nln
+        nln_results = apply_nln(
+            ae=ae,
+            train_data=ae_train_data,
+            test_data=test_data_p,
+            args=args,
+            n_neighbors=cfg.get('n_neighbors', 2),
+            batch_size=cfg['batch_size'],
+        )
+        nln_error_recon = nln_results['nln_error_recon']
+        dists_recon = nln_results['dists_recon']
 
-pred_recon = patches.reconstruct(pred_patches, args)
+        # Combined score: NLN error nelle aree con distanza alta in latent space
+        dist_threshold_pct = cfg.get('nln_dist_percentile', 70)
+        dist_mask = np.array([
+            d > np.percentile(d, dist_threshold_pct) for d in dists_recon
+        ])
+        pred_recon = nln_error_recon * dist_mask
+    else:
+        pred_patches = model.predict(test_data_p)
+        pred_recon = patches.reconstruct(pred_patches, args)
+
 test_masks_recon = patches.reconstruct(test_masks_p, args)
 
 # --- METRICS ---
@@ -233,7 +284,8 @@ metrics = {
     'method': METHOD,
     'dataset': DATASET,
     'epochs': cfg['epochs'],
-    'learning_rate': cfg['learning_rate'],
+    # learning_rate è opzionale: NLN ne ha tre (ae_lr/disc_lr/gen_lr)
+    'learning_rate': cfg.get('learning_rate'),
     'dropout': cfg.get('dropout', 0.05),
     'batch_size': cfg['batch_size'],
     'auroc': auroc,
@@ -243,8 +295,16 @@ metrics = {
     'recall': best_recall,
     'f1': best_f1,
     'train_time_seconds': t_train.elapsed,
-    'inference_time_seconds': t_inf.elapsed
+    'inference_time_seconds': t_inf.elapsed,
 }
+# Aggiungi i 3 LR di NLN se presenti
+if METHOD == 'nln':
+    metrics['ae_lr'] = cfg.get('ae_lr', 1e-4)
+    metrics['disc_lr'] = cfg.get('disc_lr', 1e-5)
+    metrics['gen_lr'] = cfg.get('gen_lr', 1e-5)
+    metrics['n_neighbors'] = cfg.get('n_neighbors', 2)
+    metrics['nln_dist_percentile'] = cfg.get('nln_dist_percentile', 70)
+
 pd.DataFrame([metrics]).to_csv(cfg['results_path'], index=False)
 print(f'Results saved to {cfg["results_path"]}')
 
